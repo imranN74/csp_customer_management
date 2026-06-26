@@ -42,7 +42,6 @@ export async function createUser(req: Request, res: Response) {
     name: createdUser.name,
     phone: createdUser.phone,
     email: createdUser.email,
-    role: createdUser.role,
   };
   return res.status(201).json({
     message: "user created successfully",
@@ -82,7 +81,7 @@ export async function login(req: Request, res: Response) {
     });
   }
 
-  const userData = { id: user._id, role: user.role, email: user.email };
+  const userData = { id: user._id, role: user.isAdmin, email: user.email };
   const secrete = process.env.JWT_SECRETE;
 
   if (!secrete) {
