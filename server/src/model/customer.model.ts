@@ -6,11 +6,13 @@ const CustomerSchema = new mongoose.Schema(
     phone: { type: String, required: true },
     email: String,
     accountNumber: String,
+    cifNumber: String,
     adhaarNum: String,
+    dob: Date,
+    age: Number,
     address: String,
     isActive: { type: Boolean, default: true },
-
-    createdBy: { type: mongoose.Types.ObjectId, ref: "User" },
+    createdBy: { type: mongoose.Types.ObjectId, ref: "User", required: true },
   },
   {
     timestamps: true,
@@ -28,7 +30,12 @@ const CustomerDetailSchema = new mongoose.Schema(
     signatureImageUrl: String,
     remarks: String,
     isActive: { type: Boolean, default: true },
-    customerId: CustomerSchema,
+    customerId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Customer",
+      required: true,
+      unique: true,
+    },
   },
   {
     timestamps: true,
