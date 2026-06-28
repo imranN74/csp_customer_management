@@ -1,4 +1,5 @@
 import { type Request, type Response } from "express";
+import { cpSync } from "node:fs";
 import XLSX from "xlsx";
 
 interface CustomerData {
@@ -11,32 +12,42 @@ interface CustomerData {
 }
 
 export async function customerDataImport(req: Request, res: Response) {
-  //   res.send("testsss");
-  //   return;
-  if (!req.file) {
-    return res.status(404).json({
+  try {
+    if (!req.file) {
+      return res.status(404).json({
+        success: false,
+        message: "file is required!",
+      });
+    }
+    const buffer = req.file.buffer;
+    const workbook = XLSX.read(buffer);
+
+    const firstSheet = workbook.SheetNames[0];
+
+    if (!firstSheet) {
+      return res.status(400).json({
+        success: false,
+        message: "sheet not found in the file!",
+      });
+    }
+
+    const sheet = workbook.Sheets[firstSheet];
+    if (!sheet) {
+      return res.status(400).json({
+        success: false,
+        message: "data not found in the uploaded file!",
+      });
+    }
+
+    const data = XLSX.utils.sheet_to_json<CustomerData>(sheet);
+
+    console.log(data);
+    //___DATA INSERT INTO DB________
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
       success: false,
-      message: "file is required!",
+      message: "something went wrong!",
     });
   }
-  const buffer = req.file.buffer;
-  const workbook = XLSX.read(buffer);
-  if (!workbook.SheetNames[0]) {
-    return;
-  }
-  const sheet = workbook.Sheets[workbook.SheetNames[0]];
-  if (!sheet) {
-    return;
-  }
-  const data = XLSX.utils.sheet_to_json<CustomerData>(sheet);
-  if (!data) {
-    return;
-  }
-
-  data.map((d) => {
-    console.log(d.School);
-  });
-
-  console.log("dataaaaaaaaa", data);
-  return;
 }
