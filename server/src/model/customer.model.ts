@@ -17,4 +17,25 @@ const CustomerSchema = new mongoose.Schema(
   },
 );
 
-const CustomerDetailSchema = new mongoose.Schema({});
+const CustomerDetailSchema = new mongoose.Schema(
+  {
+    accountOpenDate: Date,
+    passbookRcvDate: Date,
+    pmsby: Boolean,
+    pmjjby: Boolean,
+    apy: Boolean,
+    profileImageUrl: String,
+    signatureImageUrl: String,
+    remarks: String,
+    isActive: { type: Boolean, default: true },
+    customerId: CustomerSchema,
+  },
+  {
+    timestamps: true,
+  },
+);
+
+const Customer = mongoose.model("Customer", CustomerSchema);
+const CustomerDetail = mongoose.model("CustomerDetail", CustomerDetailSchema);
+
+export { Customer, CustomerDetail };
