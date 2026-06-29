@@ -1,7 +1,8 @@
 import { type Request, type Response } from "express";
 import XLSX from "xlsx";
 import { Customer, CustomerDetail } from "../model/customer.model.js";
-import { parseExcelDate, parseBooleanValues } from "../utils/validateDate.js";
+import { parseExcelDate, parseBooleanValues } from "../utils/helper.js";
+import mongoose from "mongoose";
 
 export interface CustomerData {
   "CIF Number": string;
@@ -21,8 +22,10 @@ export interface CustomerData {
   Remarks: string;
 }
 
+//___________IMPORT CUSTOMER DATA____________________
 export async function customerDataImport(req: Request, res: Response) {
   const userId = res.locals.userId;
+  const session = await mongoose.startSession();
   try {
     if (!req.file) {
       return res.status(404).json({
@@ -67,51 +70,53 @@ export async function customerDataImport(req: Request, res: Response) {
       };
     });
 
-    const insertedCustomer = await Customer.insertMany(customerData);
+    session.startTransaction();
+
+    const insertedCustomer = await Customer.insertMany(customerData, {
+      session,
+    });
 
     const customerDetailsData = insertedCustomer.map((customer, index) => {
-      if (!data[index]) {
-        return res.status(400).json({
-          success: false,
-          message: `No data found for the customer index ${index}`,
-        });
-      }
-
-      // console.log(
-      //   "pass date.......",
-      //   parseExcelDate(data[index]["Passbook Delivered Date"]),
-      // );
-      // console.log(
-      //   "acc date.......",
-      //   parseExcelDate(data[index]["Account Open Date"]),
-      // );
-      // return;
+      const row = data[index]!;
 
       return {
-        accountOpenDate: parseExcelDate(data[index]["Passbook Delivered Date"]),
-        passbookRcvDate: parseExcelDate(data[index]["Account Open Date"]),
-        pmsby: parseBooleanValues(data[index].PMSBY),
-        pmjjby: parseBooleanValues(data[index].PMJJBY),
-        apy: parseBooleanValues(data[index].APY),
-        remarks: data[index].Remarks,
+        accountOpenDate: parseExcelDate(row["Account Open Date"]),
+        passbookRcvDate: parseExcelDate(row["Passbook Delivered Date"]),
+        pmsby: parseBooleanValues(row.PMSBY),
+        pmjjby: parseBooleanValues(row.PMJJBY),
+        apy: parseBooleanValues(row.APY),
+        remarks: row.Remarks,
         customerId: customer._id,
       };
     });
 
-    const customerDetails =
-      await CustomerDetail.insertMany(customerDetailsData);
+    const customerDetails = await CustomerDetail.insertMany(
+      customerDetailsData,
+      { session },
+    );
+    await session.commitTransaction();
     if (customerDetails.length != 0) {
       const customerCreatedCount = customerDetails.length;
-      res.status(201).json({
+      return res.status(201).json({
         success: true,
         message: `${customerCreatedCount} records inserted successfully`,
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
+    await session.abortTransaction();
+    if (error.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message:
+          "A record with same Account No. or Adhaar No. found in the system or in the uploaded file!",
+      });
+    }
     return res.status(500).json({
       success: false,
       message: "something went wrong!",
     });
+  } finally {
+    session.endSession();
   }
 }

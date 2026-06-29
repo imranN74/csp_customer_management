@@ -17,7 +17,7 @@ export async function authenticateUser(
   const token = req.headers.authorization;
   try {
     if (!token) {
-      return res.status(403).json({
+      return res.status(401).json({
         success: false,
         message: "Invalid credential, Please login and try again!",
       });
@@ -32,7 +32,7 @@ export async function authenticateUser(
 
     const decoded = jwt.verify(token, jwt_secrete) as TokenDate;
     if (!decoded) {
-      return res.status(403).json({
+      return res.status(401).json({
         success: false,
         message: "Invalid credential, Please login and try again!",
       });
@@ -57,7 +57,7 @@ export function authorizeUser(req: Request, res: Response, next: NextFunction) {
   if (!role) {
     return res.status(403).json({
       success: false,
-      message: "you don't have access to perform the operation!",
+      message: "you don't have access to perform this operation!",
     });
   }
   next();
