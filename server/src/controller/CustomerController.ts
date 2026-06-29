@@ -22,6 +22,7 @@ export interface CustomerData {
 }
 
 export async function customerDataImport(req: Request, res: Response) {
+  const userId = res.locals.userId;
   try {
     if (!req.file) {
       return res.status(404).json({
@@ -48,12 +49,8 @@ export async function customerDataImport(req: Request, res: Response) {
         message: "data not found in the uploaded file!",
       });
     }
-    // console.log(sheet);
-    // return;
 
     const data = XLSX.utils.sheet_to_json<CustomerData>(sheet);
-    // console.log(data);
-    // return;
 
     const customerData = data.map((row) => {
       return {
@@ -66,7 +63,7 @@ export async function customerDataImport(req: Request, res: Response) {
         dob: parseExcelDate(row["Date of Birth"]),
         age: row.Age,
         address: row.Address,
-        createdBy: "6a3d48a67be832f9e3ba3cd7",
+        createdBy: userId,
       };
     });
 

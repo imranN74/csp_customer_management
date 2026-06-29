@@ -1,5 +1,6 @@
 import XLSX from "xlsx";
 
+//_________PARSE EXCEL DATE VALUES______________
 export function parseExcelDate(value: any): Date | null {
   if (!value) return null;
 
@@ -16,6 +17,7 @@ export function parseExcelDate(value: any): Date | null {
   return null;
 }
 
+//_______PARSE BOOLEAN VALUES____________
 export function parseBooleanValues(value: string): boolean {
   const val = value.toLowerCase();
   if (val == "yes") {
