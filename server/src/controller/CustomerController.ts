@@ -120,3 +120,103 @@ export async function customerDataImport(req: Request, res: Response) {
     session.endSession();
   }
 }
+
+//________GET CUSTOMER DATA______________
+
+export async function getCustomerData(req: Request, res: Response) {
+  const { page, limit, q, scheme } = req.query;
+
+  try {
+    const pageNumber = Number(page) || 1;
+    const limitNumber = Number(limit) || 20;
+    const search = q?.toString() || "";
+    const schemeFilter = scheme?.toString() || "";
+
+    const skip = (pageNumber - 1) * limitNumber;
+
+    const filter: any = {
+      "customer.isActive": true,
+    };
+
+    //_________GETTING CUSTOMER BASED ON USER SEARCH______________
+    if (q) {
+      filter.$or = [
+        { "customer.accountNumber": search },
+        { "customer.phone": search },
+        { "customer.adhaarNum": search },
+        { "customer.name": { $regex: search, $options: "i" } },
+      ];
+    }
+
+    if (schemeFilter) {
+      filter[schemeFilter] = true;
+    }
+
+    const customerData = await CustomerDetail.aggregate([
+      {
+        $lookup: {
+          from: "customers",
+          localField: "customerId",
+          foreignField: "_id",
+          as: "customer",
+        },
+      },
+      { $unwind: "$customer" },
+      { $match: filter },
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limitNumber },
+      {
+        $project: {
+          accountOpenDate: 1,
+          passbookRcvDate: 1,
+          pmsby: 1,
+          apy: 1,
+          pmjjby: 1,
+          remarks: 1,
+
+          "customer.name": 1,
+          "customer.phone": 1,
+          "customer.accountNumber": 1,
+          "customer.adhaarNum": 1,
+          "customer.address": 1,
+        },
+      },
+    ]);
+
+    const customerDataCount = await CustomerDetail.aggregate([
+      {
+        $lookup: {
+          from: "customers",
+          localField: "customerId",
+          foreignField: "_id",
+          as: "customer",
+        },
+      },
+      { $unwind: "$customer" },
+      { $match: filter },
+      { $count: "total" },
+    ]);
+
+    const totalPage = Math.ceil(customerDataCount[0].total / limitNumber);
+
+    const resData = {
+      data: customerData,
+      currentPage: pageNumber,
+      limit: limitNumber,
+      totalPage: totalPage,
+    };
+
+    return res.status(200).json({
+      success: true,
+      message: "customer data fetched successfully",
+      resData,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "something went wrong!",
+    });
+  }
+}

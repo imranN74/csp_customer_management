@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { customerDataImport } from "../controller/CustomerController.js";
+import {
+  customerDataImport,
+  getCustomerData,
+} from "../controller/CustomerController.js";
 
 import multer from "multer";
 import { authenticateUser, authorizeUser } from "../middleware/auth.js";
@@ -14,5 +17,7 @@ router.post(
   uplaod.single("file"),
   customerDataImport,
 );
+
+router.get("/", getCustomerData);
 
 export default router;
