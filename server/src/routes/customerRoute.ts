@@ -18,6 +18,6 @@ router.post(
   customerDataImport,
 );
 
-router.get("/", getCustomerData);
+router.get("/", authenticateUser, authorizeUser, getCustomerData);
 
 export default router;

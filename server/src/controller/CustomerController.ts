@@ -200,7 +200,7 @@ export async function getCustomerData(req: Request, res: Response) {
 
     const totalPage = Math.ceil(customerDataCount[0].total / limitNumber);
 
-    const resData = {
+    const data = {
       data: customerData,
       currentPage: pageNumber,
       limit: limitNumber,
@@ -210,7 +210,7 @@ export async function getCustomerData(req: Request, res: Response) {
     return res.status(200).json({
       success: true,
       message: "customer data fetched successfully",
-      resData,
+      data,
     });
   } catch (error) {
     console.log(error);
