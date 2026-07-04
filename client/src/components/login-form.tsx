@@ -45,6 +45,7 @@ export function LoginForm({
       });
 
       toast.success(response.data.message);
+      localStorage.setItem("token", response.data.token);
       setLoading(false);
       navigation("/");
     } catch (error: any) {
