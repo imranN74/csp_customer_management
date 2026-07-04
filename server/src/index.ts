@@ -6,7 +6,6 @@ import express, {
 import cors from "cors";
 import dotenv from "dotenv";
 import { DbConnection } from "./config/connection.js";
-import { Router } from "express";
 import rootRoutes from "./routes/index.js";
 
 const app: Application = express();

@@ -63,9 +63,11 @@ export async function login(req: Request, res: Response) {
   const email = req.body.email;
   const password = req.body.password;
 
+  console.log(email, "/", password);
+
   try {
     if (!email || !password) {
-      return res.status(404).json({
+      return res.status(401).json({
         success: false,
         message: "Please enter required fields!",
       });
@@ -73,12 +75,13 @@ export async function login(req: Request, res: Response) {
 
     const user = await User.findOne({
       email: email,
+      isActive: true,
     });
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User doesnt exists!",
+        message: "Invalid email or password!",
       });
     }
 
@@ -86,7 +89,7 @@ export async function login(req: Request, res: Response) {
     if (!checkPassword) {
       return res.status(401).json({
         success: false,
-        message: "Incorrect password!",
+        message: "Invalid email or password!",
       });
     }
 
