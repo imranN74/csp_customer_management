@@ -14,7 +14,9 @@ export async function authenticateUser(
 ) {
   const jwt_secrete = process.env.JWT_SECRETE;
 
-  const token = req.headers.authorization;
+  const authToken = req.headers.authorization;
+  const token = authToken?.split(" ")[1];
+
   try {
     if (!token) {
       return res.status(401).json({

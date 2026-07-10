@@ -63,8 +63,6 @@ export async function login(req: Request, res: Response) {
   const email = req.body.email;
   const password = req.body.password;
 
-  console.log(email, "/", password);
-
   try {
     if (!email || !password) {
       return res.status(401).json({
@@ -105,6 +103,7 @@ export async function login(req: Request, res: Response) {
     return res.status(200).json({
       success: true,
       message: "loggin successful",
+      userName: user.name,
       token: token,
     });
   } catch (error) {

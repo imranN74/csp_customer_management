@@ -148,6 +148,7 @@ export async function getCustomerData(req: Request, res: Response) {
       ];
     }
 
+    //___SCHEME FILTER_________
     if (schemeFilter) {
       filter[schemeFilter] = true;
     }
@@ -175,6 +176,7 @@ export async function getCustomerData(req: Request, res: Response) {
           pmjjby: 1,
           remarks: 1,
 
+          "customer._id": 1,
           "customer.name": 1,
           "customer.phone": 1,
           "customer.accountNumber": 1,
@@ -198,7 +200,9 @@ export async function getCustomerData(req: Request, res: Response) {
       { $count: "total" },
     ]);
 
-    const totalPage = Math.ceil(customerDataCount[0].total / limitNumber);
+    const totalPage = Math.ceil(
+      (customerDataCount[0]?.total ?? 0) / limitNumber,
+    );
 
     const data = {
       data: customerData,

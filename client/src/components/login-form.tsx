@@ -18,6 +18,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/AuthStore";
 
 export function LoginForm({
   className,
@@ -26,6 +27,8 @@ export function LoginForm({
   const [loading, setLoading] = useState(false);
 
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
+  const setToken = useAuthStore((state) => state.setToken);
 
   const navigation = useNavigate();
 
@@ -38,14 +41,19 @@ export function LoginForm({
     const email = formData.get("email");
     const password = formData.get("password");
 
+    if (!email || !password) {
+      toast.error("please enter email and password!");
+    }
+
     try {
       const response = await axios.post(`${baseUrl}/user/login`, {
         email: email,
         password: password,
       });
 
+      setToken(response.data.token);
+      localStorage.setItem("userName", response.data.userName);
       toast.success(response.data.message);
-      localStorage.setItem("token", response.data.token);
       setLoading(false);
       navigation("/");
     } catch (error: any) {
