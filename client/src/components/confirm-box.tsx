@@ -6,7 +6,7 @@ export function ConfirmBox({
   onCancel: () => void;
 }) {
   return (
-    <div className="w-[340px] rounded-xl border border-slate-200 bg-white p-5 shadow-xl">
+    <div className="w-85 rounded-xl border border-slate-200 bg-white p-5 shadow-xl">
       <div className="flex items-start gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
           <svg

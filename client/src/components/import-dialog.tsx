@@ -76,8 +76,18 @@ export function ImportDialog({
               <DownloadTemplateButton />
             </div>
             <DialogDescription>
-              Fields marks with <span className="text-red-500">*</span> cannot
-              be blank in the excel sheet
+              <div className="text-center">
+                &bull;&nbsp;Fields Name with
+                <span className="text-red-500">&nbsp;Bold and italic font</span>
+                &nbsp;are mandatory fields and cannot be blank in the excel
+                sheet.
+              </div>
+              <div className="text-center mt-1">
+                &bull;&nbsp;
+                <span className="text-red-500 font-semibold">Note</span>- import
+                data with only downloaded template and don't change the format
+                or field name.
+              </div>
             </DialogDescription>
           </DialogHeader>
           <FieldGroup>
