@@ -9,6 +9,8 @@ import toast from "react-hot-toast";
 import { useEffect } from "react";
 import { SomethingWentWrong } from "./something-went-wrong";
 import { PMJJBY, APY, PMSBY } from "./scheme-button";
+import { InfoDialog } from "./info-dialog";
+import { useState } from "react";
 
 export interface Customer {
   _id: string;
@@ -40,6 +42,8 @@ export function CustomerTable({
   const navigate = useNavigate();
   let { page } = useParams();
   const pageNumber = Number(page) || 1;
+
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
 
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const token = localStorage.getItem("token");
@@ -177,6 +181,9 @@ export function CustomerTable({
                 </td>
                 <td className="pr-0 px-2 py-4 flex gap-3">
                   <button
+                    onClick={() => {
+                      setOpenDialog(!openDialog);
+                    }}
                     type="button"
                     className="text-sm text-red-700 cursor-pointer hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded"
                     aria-label={`Delete ${user.customer.name}`}
@@ -213,6 +220,7 @@ export function CustomerTable({
           navigate(`/customer/page/${data.data.currentPage + 1}`);
         }}
       />
+      <InfoDialog open={openDialog} setOpen={setOpenDialog} />
     </div>
   );
 }
