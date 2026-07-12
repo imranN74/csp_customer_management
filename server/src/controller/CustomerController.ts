@@ -33,6 +33,7 @@ export async function customerDataImport(req: Request, res: Response) {
         message: "file is required!",
       });
     }
+
     const buffer = req.file.buffer;
     const workbook = XLSX.read(buffer);
 
@@ -54,6 +55,7 @@ export async function customerDataImport(req: Request, res: Response) {
     }
 
     const data = XLSX.utils.sheet_to_json<CustomerData>(sheet);
+    console.log(data);
 
     const customerData = data.map((row) => {
       return {

@@ -1,11 +1,6 @@
-import { Search, X } from "lucide-react";
+import { Download, FunnelX, Search, X } from "lucide-react";
 import { useRef, useState } from "react";
-import {
-  ShieldCheck,
-  HeartHandshake,
-  PiggyBank,
-  RefreshCcwDot,
-} from "lucide-react";
+import { ShieldCheck, HeartHandshake, PiggyBank } from "lucide-react";
 
 interface Filter {
   onSearch: (value: string) => void;
@@ -70,7 +65,7 @@ export function Filter({ onSearch, onScheme }: Filter) {
       <div className="flex gap-1 h-7">
         <button
           type="button"
-          className="flex gap-2 items-center text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:bg-blue-300  focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-2 focus:outline-none border-blue-400 rounded-xl cursor-pointer"
+          className="flex gap-2 items-center text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-blue-100  hover:text-heading focus:bg-violet-500 focus:border-3 shadow-xs font-medium leading-5 rounded-base text-sm px-2 focus:outline-none border-blue-400 rounded-lg cursor-pointer text-blue-400"
           onClick={() => {
             onScheme("pmsby");
           }}
@@ -80,7 +75,7 @@ export function Filter({ onSearch, onScheme }: Filter) {
         </button>
         <button
           type="button"
-          className="flex gap-2 items-center text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:bg-blue-300  focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-2 py-2.5 focus:outline-none border-orange-400 rounded-xl cursor-pointer"
+          className="flex gap-2 items-center text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-orange-100 hover:text-heading focus:bg-violet-500 focus:border-3 shadow-xs font-medium leading-5 rounded-base text-sm px-2 py-2.5 focus:outline-none border-orange-400 text-orange-400 rounded-lg cursor-pointer"
           onClick={() => {
             onScheme("pmjjby");
           }}
@@ -90,7 +85,7 @@ export function Filter({ onSearch, onScheme }: Filter) {
         </button>
         <button
           type="button"
-          className="flex gap-2 items-center text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:bg-blue-300 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-2 py-2.5 focus:outline-none border-green-400 rounded-xl cursor-pointer"
+          className="flex gap-2 items-center text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-green-100 hover:text-heading focus:bg-violet-500 focus:border-3 shadow-xs font-medium leading-5 rounded-base text-sm px-2 py-2.5 focus:outline-none border-green-400 text-green-400 rounded-lg cursor-pointer"
           onClick={() => {
             onScheme("apy");
           }}
@@ -100,20 +95,35 @@ export function Filter({ onSearch, onScheme }: Filter) {
         </button>
         <button
           type="button"
-          className="flex gap-2 items-center text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-2 py-2 focus:outline-none border-black rounded-xl cursor-pointer"
+          title="Clear Filters"
           onClick={() => {
             onScheme("");
             onSearch("");
             setSpin(true);
+
             setTimeout(() => {
               setSpin(false);
             }, 1000);
           }}
+          className="group flex cursor-pointer items-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 shadow-sm transition-all duration-200 hover:border-red-300 hover:bg-red-50 hover:shadow-md active:scale-95"
         >
-          <span className={`${spin ? "animate-spin" : ""}`}>
-            <RefreshCcwDot size={20} />
-          </span>
-          Remove Filters
+          <FunnelX
+            size={18}
+            className={`transition-transform duration-700 ${
+              spin ? "rotate-180" : ""
+            } group-hover:scale-110`}
+          />
+        </button>
+        <button
+          title="download csv report"
+          type="button"
+          // onClick={handleDownloadReport}
+          className="group flex cursor-pointer items-center gap-2 rounded-lg border border-emerald-400 px-3 py-2 text-sm font-medium text-emerald-600 shadow-sm transition-all duration-200 hover:bg-emerald-50 hover:shadow-md active:scale-95"
+        >
+          <Download
+            size={18}
+            className="group transition-transform duration-300 group-hover:translate-y-0.5 group-hover:scale-110 group-active:translate-y-1"
+          />
         </button>
       </div>
     </div>

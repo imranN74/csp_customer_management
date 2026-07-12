@@ -65,8 +65,6 @@ export function CustomerTable({
     },
   });
 
-  console.log(data);
-
   useEffect(() => {
     if (!data) return;
 
