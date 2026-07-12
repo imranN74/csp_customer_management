@@ -226,3 +226,88 @@ export async function getCustomerData(req: Request, res: Response) {
     });
   }
 }
+
+//________UPDATE CUSTOMER DATA________
+
+export async function updateCustomer(req: Request, res: Response) {
+  const {
+    name,
+    phone,
+    accountNumber,
+    adhaarNum,
+    address,
+    accountOpenDate,
+    passbookRcvDate,
+    pmsby,
+    apy,
+    pmjjby,
+    remarks,
+  } = req.body;
+
+  const customerId = req.params.id!;
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+    await Customer.findByIdAndUpdate(
+      {
+        _id: customerId,
+      },
+      { name, phone, accountNumber, adhaarNum, address },
+      { new: true },
+    );
+    await CustomerDetail.findOneAndUpdate(
+      {
+        customerId,
+      },
+      {
+        accountOpenDate: new Date(accountOpenDate),
+        passbookRcvDate: new Date(passbookRcvDate),
+        pmsby: pmsby ? true : false,
+        pmjjby: pmjjby ? true : false,
+        apy: apy ? true : false,
+        remarks,
+      },
+    );
+    await session.commitTransaction();
+    return res.status(201).json({
+      success: true,
+      message: "customer details updated successfully",
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "somthing went wrong while updating data!",
+    });
+  } finally {
+    session.endSession();
+  }
+}
+
+//________DELETE CUSTOMER_____________-
+
+export async function deleteCustomer(req: Request, res: Response) {
+  const customerId = req.params.id!;
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+    await Customer.findByIdAndUpdate({ _id: customerId }, { isActive: false });
+    await CustomerDetail.findOneAndUpdate({ customerId }, { isActive: false });
+    await session.commitTransaction();
+    return res.status(200).json({
+      success: true,
+      message: "Customer deleted successfully",
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "something went wrong!",
+    });
+  } finally {
+    session.endSession();
+  }
+}

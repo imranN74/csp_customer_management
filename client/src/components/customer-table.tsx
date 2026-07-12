@@ -1,4 +1,4 @@
-import { SquarePen, Trash, Info } from "lucide-react";
+import { Trash2, Eye } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Loader } from "./loader";
@@ -11,6 +11,9 @@ import { SomethingWentWrong } from "./something-went-wrong";
 import { PMJJBY, APY, PMSBY } from "./scheme-button";
 import { InfoDialog } from "./info-dialog";
 import { useState } from "react";
+import { filterCustomer } from "@/lib/helper";
+import { ConfirmBox } from "./confirm-box";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export interface Customer {
   _id: string;
@@ -42,12 +45,16 @@ export function CustomerTable({
   const navigate = useNavigate();
   let { page } = useParams();
   const pageNumber = Number(page) || 1;
+  const queryClient = useQueryClient();
 
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+
+  const [customerData, setCustomerData] = useState<CustomerDetail>();
 
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const token = localStorage.getItem("token");
 
+  //____handle Page_________-
   useEffect(() => {
     if (pageNumber < 1) {
       toast.error("Invalid page");
@@ -68,7 +75,13 @@ export function CustomerTable({
       return response.data;
     },
   });
+  function handleShowDetails(id: string) {
+    const d = filterCustomer(data.data.data, id);
+    setCustomerData(d);
+    setOpenDialog(!openDialog);
+  }
 
+  //__HANDLE PAGE_________-
   useEffect(() => {
     if (!data) return;
 
@@ -87,6 +100,22 @@ export function CustomerTable({
       </div>
     );
   }
+
+  const { mutate } = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await axios.delete(`${baseUrl}/customer/${id}`, {
+        headers: { Authorization: `Bearer,${token}` },
+      });
+      return response;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["customers"] });
+      toast.success(data.data.message);
+    },
+    onError: (data) => {
+      toast.error(data.message);
+    },
+  });
 
   const SortIcon = () => (
     <svg
@@ -179,31 +208,44 @@ export function CustomerTable({
                 <td className="px-3 py-4 text-slate-500">
                   {user.customer.accountNumber}
                 </td>
-                <td className="pr-0 px-2 py-4 flex gap-3">
-                  <button
-                    onClick={() => {
-                      setOpenDialog(!openDialog);
-                    }}
-                    type="button"
-                    className="text-sm text-red-700 cursor-pointer hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded"
-                    aria-label={`Delete ${user.customer.name}`}
-                  >
-                    <Info color="green" size={17} />
-                  </button>
-                  <button
-                    type="button"
-                    className="text-sm text-blue-700 cursor-pointer hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
-                    aria-label={`Edit ${user.customer.name}`}
-                  >
-                    <SquarePen size={17} />
-                  </button>
-                  <button
-                    type="button"
-                    className="text-sm text-red-700 cursor-pointer hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded"
-                    aria-label={`Delete ${user.customer.name}`}
-                  >
-                    <Trash color="red" size={17} />
-                  </button>
+                <td className="px-3 py-4">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      title="View Details"
+                      onClick={() => handleShowDetails(user._id)}
+                      className="group flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-emerald-50 text-emerald-600 transition-all duration-200 hover:scale-110 hover:bg-emerald-100 active:scale-95"
+                    >
+                      <Eye
+                        size={18}
+                        className="transition-transform duration-200 group-hover:scale-110"
+                      />
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        toast.custom((t) => {
+                          return (
+                            <ConfirmBox
+                              onCancel={() => toast.dismiss(t.id)}
+                              onConfirm={() => {
+                                mutate(user.customer._id);
+                                toast.dismiss(t.id);
+                              }}
+                            />
+                          );
+                        });
+                      }}
+                      type="button"
+                      title="Delete Customer"
+                      className="group flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-red-50 text-red-600 transition-all duration-200 hover:scale-110 hover:bg-red-100 active:scale-95"
+                    >
+                      <Trash2
+                        size={18}
+                        className="transition-transform duration-200 group-hover:scale-110"
+                      />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))
@@ -220,7 +262,11 @@ export function CustomerTable({
           navigate(`/customer/page/${data.data.currentPage + 1}`);
         }}
       />
-      <InfoDialog open={openDialog} setOpen={setOpenDialog} />
+      <InfoDialog
+        open={openDialog}
+        setOpen={setOpenDialog}
+        data={customerData!}
+      />
     </div>
   );
 }

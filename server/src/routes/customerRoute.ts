@@ -2,6 +2,8 @@ import { Router } from "express";
 import {
   customerDataImport,
   getCustomerData,
+  updateCustomer,
+  deleteCustomer,
 } from "../controller/CustomerController.js";
 
 import multer from "multer";
@@ -19,5 +21,7 @@ router.post(
 );
 
 router.get("/", authenticateUser, authorizeUser, getCustomerData);
+router.put("/update/:id", updateCustomer);
+router.delete("/:id", deleteCustomer);
 
 export default router;

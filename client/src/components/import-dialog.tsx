@@ -31,7 +31,7 @@ export function ImportDialog({
   const navigate = useNavigate();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [laoding, setLoading] = useState<Boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   async function handleImport(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -60,6 +60,8 @@ export function ImportDialog({
       navigate("/customer");
     } catch (error: any) {
       toast.error(error.response.data.message);
+      setLoading(false);
+    } finally {
       setLoading(false);
     }
   }
@@ -130,8 +132,9 @@ export function ImportDialog({
                 <Button
                   type="submit"
                   className={"bg-purple-500 hover:bg-violet-700 cursor-pointer"}
+                  disabled={loading}
                 >
-                  {laoding ? "Processing data...." : "Submit"}
+                  {loading ? "Processing data...." : "Submit"}
                 </Button>
               </div>
             </form>
