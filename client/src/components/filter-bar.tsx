@@ -30,10 +30,8 @@ export function Filter({ onSearch, onScheme }: Filter) {
   return (
     <div className="flex justify-between py-2 mx-2">
       <form className="group relative flex h-10 w-52 items-center rounded-full px-1 transition-all duration-500 focus-within:rounded-sm border border-gray-400">
-        {/* Search Icon */}
-
-        {/* Input */}
         <input
+          title="Search by name, account no, adhaar no, mobile no"
           type="text"
           placeholder="Search by name, account no, adhaar no...."
           className="peer h-full w-full bg-transparent px-2 text-sm outline-none placeholder:text-gray-400"
@@ -45,7 +43,6 @@ export function Filter({ onSearch, onScheme }: Filter) {
 
         <Search className="h-4 w-4" strokeWidth={2} color="gray" />
 
-        {/* Reset Button */}
         <button
           title="reset"
           type="reset"

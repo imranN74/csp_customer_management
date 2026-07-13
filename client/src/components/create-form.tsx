@@ -37,6 +37,21 @@ export function CreateForm() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    // const phone = formData.get("phone");
+    // const adhaarNo = formData.get("adhaarNum");
+
+    // if (phone && phone?.toString.length > 10 && phone?.toString.length < 10) {
+    //   toast.error("invalid mobile no.!");
+    // }
+
+    // if (
+    //   adhaarNo &&
+    //   adhaarNo?.toString.length > 10 &&
+    //   adhaarNo?.toString.length < 10
+    // ) {
+    //   toast.error("invalid adhaar no.!");
+    // }
+
     const data = Object.fromEntries(formData.entries());
     mutate(data);
   }
@@ -69,6 +84,7 @@ export function CreateForm() {
           <input
             type="tel"
             name="phone"
+            max={10}
             required
             className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 border-gray-400 focus:ring-indigo-500"
           />
@@ -110,6 +126,7 @@ export function CreateForm() {
           <input
             type="text"
             name="adhaarNum"
+            max={12}
             className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500 border-gray-400"
           />
         </div>

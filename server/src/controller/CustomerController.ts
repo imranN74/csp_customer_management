@@ -55,7 +55,6 @@ export async function customerDataImport(req: Request, res: Response) {
     }
 
     const data = XLSX.utils.sheet_to_json<CustomerData>(sheet);
-    console.log(data);
 
     const customerData = data.map((row) => {
       return {
@@ -279,8 +278,8 @@ export async function updateCustomer(req: Request, res: Response) {
         customerId,
       },
       {
-        accountOpenDate: new Date(accountOpenDate),
-        passbookRcvDate: new Date(passbookRcvDate),
+        accountOpenDate: accountOpenDate,
+        passbookRcvDate: passbookRcvDate,
         pmsby: pmsby ? true : false,
         pmjjby: pmjjby ? true : false,
         apy: apy ? true : false,
@@ -365,6 +364,7 @@ export async function createCustomer(req: Request, res: Response) {
     pmjjby,
     remarks,
   } = req.body;
+  const data = req.body;
 
   const userId = res.locals.userId;
   const session = await mongoose.startSession();
@@ -378,8 +378,10 @@ export async function createCustomer(req: Request, res: Response) {
       });
     }
 
-    !accountNumber ? (accountNumber = undefined) : accountNumber;
-    !adhaarNum ? (adhaarNum = undefined) : adhaarNum;
+    !accountNumber
+      ? (accountNumber = undefined)
+      : (accountNumber = accountNumber.trim());
+    !adhaarNum ? (adhaarNum = undefined) : (adhaarNum = adhaarNum.trim());
     !pmsby ? (pmsby = false) : (pmsby = true);
     !pmjjby ? (pmjjby = false) : (pmjjby = true);
     !apy ? (apy = false) : (apy = true);
@@ -390,8 +392,8 @@ export async function createCustomer(req: Request, res: Response) {
           name: name.trim(),
           phone: phone.trim(),
           email: email.trim(),
-          accountNumber: accountNumber.trim(),
-          adhaarNum: adhaarNum.trim(),
+          accountNumber: accountNumber,
+          adhaarNum: adhaarNum,
           age,
           dob,
           cifNumber: cifNumber.trim(),
