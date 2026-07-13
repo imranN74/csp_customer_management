@@ -59,15 +59,15 @@ export async function customerDataImport(req: Request, res: Response) {
 
     const customerData = data.map((row) => {
       return {
-        name: row.Name,
-        phone: row["Mobile No"],
-        email: row.email,
-        accountNumber: row["Account Number"],
-        cifNumber: row["CIF Number"],
-        adhaarNum: row["Aadhaar Number"],
+        name: row.Name.trim(),
+        phone: row["Mobile No"].trim(),
+        email: row.email.trim(),
+        accountNumber: row["Account Number"]?.toString().trim() || undefined,
+        cifNumber: row["CIF Number"]?.toString().trim(),
+        adhaarNum: row["Aadhaar Number"]?.toString().trim() || undefined,
         dob: parseExcelDate(row["Date of Birth"]),
         age: row.Age,
-        address: row.Address,
+        address: row.Address.trim(),
         createdBy: userId,
       };
     });
@@ -87,7 +87,7 @@ export async function customerDataImport(req: Request, res: Response) {
         pmsby: parseBooleanValues(row.PMSBY),
         pmjjby: parseBooleanValues(row.PMJJBY),
         apy: parseBooleanValues(row.APY),
-        remarks: row.Remarks,
+        remarks: row.Remarks.trim(),
         customerId: customer._id,
       };
     });
@@ -230,7 +230,7 @@ export async function getCustomerData(req: Request, res: Response) {
 //________UPDATE CUSTOMER DATA________
 
 export async function updateCustomer(req: Request, res: Response) {
-  const {
+  let {
     name,
     phone,
     accountNumber,
@@ -246,14 +246,33 @@ export async function updateCustomer(req: Request, res: Response) {
 
   const customerId = req.params.id!;
   const session = await mongoose.startSession();
+
   try {
+    if (!name || !phone) {
+      return res.status(401).json({
+        success: false,
+        message: "name or phone no. cannot be blank!",
+      });
+    }
+
+    !accountNumber
+      ? (accountNumber = undefined)
+      : (accountNumber = adhaarNum.trim());
+    !adhaarNum ? (adhaarNum = undefined) : (adhaarNum = adhaarNum.trim());
+
     session.startTransaction();
     await Customer.findByIdAndUpdate(
       {
         _id: customerId,
       },
-      { name, phone, accountNumber, adhaarNum, address },
-      { new: true },
+      {
+        name: name.trim(),
+        phone: phone.trim(),
+        accountNumber: accountNumber,
+        adhaarNum: adhaarNum,
+        address: address.trim(),
+      },
+      { session },
     );
     await CustomerDetail.findOneAndUpdate(
       {
@@ -267,15 +286,22 @@ export async function updateCustomer(req: Request, res: Response) {
         apy: apy ? true : false,
         remarks,
       },
+      { session },
     );
     await session.commitTransaction();
     return res.status(201).json({
       success: true,
       message: "customer details updated successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     await session.abortTransaction();
     console.log(error);
+    if (error.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message: "A record with same Account No. or Adhaar No. already exists!",
+      });
+    }
     return res.status(500).json({
       success: false,
       message: "somthing went wrong while updating data!",
@@ -293,8 +319,16 @@ export async function deleteCustomer(req: Request, res: Response) {
 
   try {
     session.startTransaction();
-    await Customer.findByIdAndUpdate({ _id: customerId }, { isActive: false });
-    await CustomerDetail.findOneAndUpdate({ customerId }, { isActive: false });
+    await Customer.findByIdAndUpdate(
+      { _id: customerId },
+      { isActive: false },
+      { session },
+    );
+    await CustomerDetail.findOneAndUpdate(
+      { customerId },
+      { isActive: false },
+      { session },
+    );
     await session.commitTransaction();
     return res.status(200).json({
       success: true,
@@ -303,6 +337,101 @@ export async function deleteCustomer(req: Request, res: Response) {
   } catch (error) {
     await session.abortTransaction();
     console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "something went wrong!",
+    });
+  } finally {
+    session.endSession();
+  }
+}
+
+//____CREATE CUSTOMER BY FORM__________________
+export async function createCustomer(req: Request, res: Response) {
+  let {
+    name,
+    phone,
+    email,
+    accountNumber,
+    adhaarNum,
+    address,
+    age,
+    dob,
+    cifNumber,
+    accountOpenDate,
+    passbookRcvDate,
+    pmsby,
+    apy,
+    pmjjby,
+    remarks,
+  } = req.body;
+
+  const userId = res.locals.userId;
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+    if (!name && !phone) {
+      return res.status(406).json({
+        success: false,
+        message: "name and phone no. is required!",
+      });
+    }
+
+    !accountNumber ? (accountNumber = undefined) : accountNumber;
+    !adhaarNum ? (adhaarNum = undefined) : adhaarNum;
+    !pmsby ? (pmsby = false) : (pmsby = true);
+    !pmjjby ? (pmjjby = false) : (pmjjby = true);
+    !apy ? (apy = false) : (apy = true);
+
+    const customer = await Customer.create(
+      [
+        {
+          name: name.trim(),
+          phone: phone.trim(),
+          email: email.trim(),
+          accountNumber: accountNumber.trim(),
+          adhaarNum: adhaarNum.trim(),
+          age,
+          dob,
+          cifNumber: cifNumber.trim(),
+          address: address.trim(),
+          createdBy: userId,
+        },
+      ],
+      { session },
+    );
+
+    await CustomerDetail.create(
+      [
+        {
+          accountOpenDate,
+          passbookRcvDate,
+          pmsby,
+          apy,
+          pmjjby,
+          remarks: remarks.trim(),
+          customerId: customer[0]!._id,
+        },
+      ],
+      { session },
+    );
+
+    await session.commitTransaction();
+
+    return res.status(201).json({
+      success: false,
+      message: "customer created successfully",
+    });
+  } catch (error: any) {
+    await session.abortTransaction();
+    console.log(error);
+    if (error.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message: "A record with same Account No. or Adhaar No. already exists!",
+      });
+    }
     return res.status(500).json({
       success: false,
       message: "something went wrong!",

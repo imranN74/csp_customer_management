@@ -4,6 +4,7 @@ import {
   getCustomerData,
   updateCustomer,
   deleteCustomer,
+  createCustomer,
 } from "../controller/CustomerController.js";
 
 import multer from "multer";
@@ -21,7 +22,8 @@ router.post(
 );
 
 router.get("/", authenticateUser, authorizeUser, getCustomerData);
-router.put("/update/:id", updateCustomer);
-router.delete("/:id", deleteCustomer);
+router.put("/update/:id", authenticateUser, authorizeUser, updateCustomer);
+router.delete("/:id", authenticateUser, authorizeUser, deleteCustomer);
+router.post("/create", authenticateUser, authorizeUser, createCustomer);
 
 export default router;

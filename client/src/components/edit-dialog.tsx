@@ -14,7 +14,6 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { type CustomerDetail } from "@/components/customer-table";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { SomethingWentWrong } from "./something-went-wrong";
 
 export function EditDialog({
   open,
@@ -28,23 +27,29 @@ export function EditDialog({
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const queryClient = useQueryClient();
 
+  const today = new Date().toISOString().split("T")[0];
+
   const token = useAuthStore((state) => state.token);
 
-  const { mutate, isPending, error } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: async (payload: any) => {
       const response = await axios.put(
         `${baseUrl}/customer/update/${customerData.customer._id}`,
         payload,
-        { headers: { Authorixarion: `Bearer ${token}` } },
+        { headers: { Authorization: `Bearer ${token}` } },
       );
-      return response;
+      return response.data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ["customers"],
       });
-      toast.success(data.data.message);
+      toast.success(data.message);
       setOpen(false);
+    },
+    onError: (error: any) => {
+      console.log(error.response);
+      toast.error(error.response?.data?.message ?? "something went wrong!");
     },
   });
 
@@ -56,14 +61,6 @@ export function EditDialog({
     mutate(data);
   }
 
-  if (error) {
-    return <SomethingWentWrong />;
-  }
-
-  // if (isPending) {
-  //   return <OverlayLoader text="Updating Details..." />;
-  // }
-
   return (
     <div className="">
       <Dialog open={open} onOpenChange={setOpen}>
@@ -74,10 +71,6 @@ export function EditDialog({
             <DialogDescription>
               Fields marks with <span className="text-red-500">*</span> cannot
               be blank.
-              <div>
-                <span className="font-semibold text-red-500">Note</span> -
-                Account No. and Adhaar No. cannot be edited
-              </div>
             </DialogDescription>
           </DialogHeader>
           <FieldGroup>
@@ -95,6 +88,7 @@ export function EditDialog({
                         Name<span className="text-red-600">*</span>
                       </label>
                       <input
+                        required
                         type="text"
                         name="name"
                         defaultValue={customerData?.customer.name}
@@ -109,6 +103,7 @@ export function EditDialog({
                       <input
                         name="phone"
                         type="text"
+                        required
                         defaultValue={customerData?.customer.phone}
                         className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-violet-500"
                       />
@@ -122,8 +117,7 @@ export function EditDialog({
                         name="accountNumber"
                         type="text"
                         defaultValue={customerData?.customer.accountNumber}
-                        readOnly
-                        className="w-full cursor-not-allowed rounded-lg border bg-slate-100 px-3 py-2 text-sm"
+                        className="w-full  rounded-lg border border-slate-300 px-3 py-2 text-sm"
                       />
                     </div>
 
@@ -135,8 +129,7 @@ export function EditDialog({
                         name="adhaarNum"
                         type="text"
                         defaultValue={customerData?.customer.adhaarNum}
-                        readOnly
-                        className="w-full cursor-not-allowed rounded-lg border bg-slate-100 px-3 py-2 text-sm"
+                        className="w-full  rounded-lg border border-slate-300 px-3 py-2 text-sm"
                       />
                     </div>
 
@@ -168,6 +161,7 @@ export function EditDialog({
                         <input
                           type="date"
                           name="accountOpenDate"
+                          max={today}
                           defaultValue={
                             formatFormData(customerData?.accountOpenDate) ?? ""
                           }
@@ -182,6 +176,7 @@ export function EditDialog({
                         <input
                           name="passbookRcvDate"
                           type="date"
+                          max={today}
                           defaultValue={
                             formatFormData(customerData?.passbookRcvDate) ?? ""
                           }

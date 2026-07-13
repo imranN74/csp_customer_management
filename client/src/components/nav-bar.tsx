@@ -1,7 +1,8 @@
 import { LogoutButton } from "./logout";
-import { Upload } from "lucide-react";
+import { Plus, Upload } from "lucide-react";
 import { ImportDialog } from "./import-dialog";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export function Navbar() {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -15,7 +16,7 @@ export function Navbar() {
         <button
           onClick={() => setOpenDialog(!openDialog)}
           type="button"
-          className="relative overflow-hidden rounded-full bg-[#66ff66] px-6 py-3 text-[17px] font-bold tracking-[0.05rem] text-[ghostwhite] cursor-pointer
+          className="relative overflow-hidden rounded-xl bg-[#66ff66] px-6 py-2.5 text-[17px] font-bold tracking-[0.05rem] text-[ghostwhite] cursor-pointer
   before:absolute before:top-0 before:left-[-10%] before:h-full before:w-[120%] before:skew-x-[-30deg] before:bg-violet-500 before:content-['']
   before:transition-transform before:duration-300 before:ease-[cubic-bezier(0.3,1,0.8,1)]
   hover:before:translate-x-full
@@ -27,6 +28,17 @@ export function Navbar() {
             Import
           </span>
         </button>
+      </div>
+      <div>
+        <Link to="/create">
+          <button
+            type="button"
+            className="flex h-10 cursor-pointer items-center gap-2 rounded-lg bg-violet-600  px-4 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
+          >
+            <Plus size={18} strokeWidth={2.5} />
+            <span>Create New</span>
+          </button>
+        </Link>
       </div>
       <ImportDialog open={openDialog} setOpen={setOpenDialog} />
     </div>

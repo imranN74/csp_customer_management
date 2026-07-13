@@ -104,16 +104,16 @@ export function CustomerTable({
   const { mutate } = useMutation({
     mutationFn: async (id: string) => {
       const response = await axios.delete(`${baseUrl}/customer/${id}`, {
-        headers: { Authorization: `Bearer,${token}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       return response;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["customers"] });
-      toast.success(data.data.message);
+      toast.success(data?.data?.message);
     },
-    onError: (data) => {
-      toast.error(data.message);
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message);
     },
   });
 
@@ -200,13 +200,13 @@ export function CustomerTable({
                   </div>
                 </td>
                 <td className="px-3 py-4 text-slate-500">
-                  {user.customer.phone}
+                  {user.customer.phone || "-"}
                 </td>
                 <td className="px-3 py-4 text-slate-500">
-                  {user.customer.adhaarNum}
+                  {user.customer.adhaarNum || "-"}
                 </td>
                 <td className="px-3 py-4 text-slate-500">
-                  {user.customer.accountNumber}
+                  {user.customer.accountNumber || "-"}
                 </td>
                 <td className="px-3 py-4">
                   <div className="flex items-center gap-2">
@@ -252,16 +252,21 @@ export function CustomerTable({
           )}
         </tbody>
       </table>
-      <Pagination
-        currentPage={data.data.currentPage}
-        totalPages={data.data.totalPage}
-        onPrevious={() => {
-          navigate(`/customer/page/${data.data.currentPage - 1}`);
-        }}
-        onNext={() => {
-          navigate(`/customer/page/${data.data.currentPage + 1}`);
-        }}
-      />
+      {data.data.data.length === 0 ? (
+        ""
+      ) : (
+        <Pagination
+          currentPage={data.data.currentPage}
+          totalPages={data.data.totalPage}
+          onPrevious={() => {
+            navigate(`/customer/page/${data.data.currentPage - 1}`);
+          }}
+          onNext={() => {
+            navigate(`/customer/page/${data.data.currentPage + 1}`);
+          }}
+        />
+      )}
+
       <InfoDialog
         open={openDialog}
         setOpen={setOpenDialog}

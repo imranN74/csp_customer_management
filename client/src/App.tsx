@@ -6,6 +6,7 @@ import { Dashboard } from "./page/Dashboard";
 import { ProtectedRoute } from "./page/ProtectedRoute";
 import { PublicRoute } from "./page/PublicRoute";
 import { PageNotFound } from "./components/page-not-found";
+import { CreateForm } from "./components/create-form";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ function App() {
               <Route index element={<Dashboard />} />
               <Route path="customer/page?/:page?" element={<Customer />} />
               <Route path="dashboard" element={<Dashboard />} />
+              <Route path="create" element={<CreateForm />} />
             </Route>
           </Route>
           <Route path="*" element={<PageNotFound />} />

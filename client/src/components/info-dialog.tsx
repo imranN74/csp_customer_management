@@ -47,7 +47,10 @@ export function InfoDialog({
               label="Aadhaar No."
               value={data?.customer?.adhaarNum || "-"}
             />
-            <DetailItem label="Address" value={data?.customer?.address} />
+            <DetailItem
+              label="Address"
+              value={data?.customer?.address || "-"}
+            />
             <DetailItem
               label="Account Opened"
               value={formatDate(data?.accountOpenDate) || "-"}
