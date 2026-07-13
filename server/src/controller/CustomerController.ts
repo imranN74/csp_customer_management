@@ -256,7 +256,7 @@ export async function updateCustomer(req: Request, res: Response) {
 
     !accountNumber
       ? (accountNumber = undefined)
-      : (accountNumber = adhaarNum.trim());
+      : (accountNumber = accountNumber.trim());
     !adhaarNum ? (adhaarNum = undefined) : (adhaarNum = adhaarNum.trim());
 
     session.startTransaction();
