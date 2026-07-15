@@ -85,7 +85,6 @@ export function CreateForm() {
             type="tel"
             name="phone"
             max={10}
-            required
             className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 border-gray-400 focus:ring-indigo-500"
           />
         </div>

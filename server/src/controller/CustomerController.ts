@@ -1,7 +1,11 @@
 import { type Request, type Response } from "express";
 import XLSX from "xlsx";
 import { Customer, CustomerDetail } from "../model/customer.model.js";
-import { parseExcelDate, parseBooleanValues } from "../utils/helper.js";
+import {
+  parseExcelDate,
+  parseBooleanValues,
+  vlidataData,
+} from "../utils/helper.js";
 import mongoose from "mongoose";
 
 export interface CustomerData {
@@ -58,15 +62,15 @@ export async function customerDataImport(req: Request, res: Response) {
 
     const customerData = data.map((row) => {
       return {
-        name: row.Name.trim(),
-        phone: row["Mobile No"].trim(),
-        email: row.email.trim(),
-        accountNumber: row["Account Number"]?.toString().trim() || undefined,
-        cifNumber: row["CIF Number"]?.toString().trim(),
-        adhaarNum: row["Aadhaar Number"]?.toString().trim() || undefined,
+        name: vlidataData(row.Name),
+        phone: vlidataData(row["Mobile No"]),
+        email: vlidataData(row.email),
+        accountNumber: vlidataData(row["Account Number"]),
+        cifNumber: vlidataData(row["CIF Number"]),
+        adhaarNum: vlidataData(row["Aadhaar Number"]),
         dob: parseExcelDate(row["Date of Birth"]),
         age: row.Age,
-        address: row.Address.trim(),
+        address: vlidataData(row.Address),
         createdBy: userId,
       };
     });
@@ -86,7 +90,7 @@ export async function customerDataImport(req: Request, res: Response) {
         pmsby: parseBooleanValues(row.PMSBY),
         pmjjby: parseBooleanValues(row.PMJJBY),
         apy: parseBooleanValues(row.APY),
-        remarks: row.Remarks.trim(),
+        remarks: vlidataData(row.Remarks),
         customerId: customer._id,
       };
     });
@@ -247,10 +251,10 @@ export async function updateCustomer(req: Request, res: Response) {
   const session = await mongoose.startSession();
 
   try {
-    if (!name || !phone) {
+    if (!name) {
       return res.status(401).json({
         success: false,
-        message: "name or phone no. cannot be blank!",
+        message: "name cannot be blank!",
       });
     }
 
@@ -371,10 +375,10 @@ export async function createCustomer(req: Request, res: Response) {
 
   try {
     session.startTransaction();
-    if (!name && !phone) {
+    if (!name) {
       return res.status(406).json({
         success: false,
-        message: "name and phone no. is required!",
+        message: "name is required!",
       });
     }
 

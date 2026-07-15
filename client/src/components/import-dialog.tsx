@@ -58,6 +58,7 @@ export function ImportDialog({
       toast.success(response.data.message);
       setLoading(false);
       navigate("/customer");
+      window.location.reload();
     } catch (error: any) {
       toast.error(error.response.data.message);
       setLoading(false);

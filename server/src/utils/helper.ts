@@ -19,9 +19,20 @@ export function parseExcelDate(value: any): Date | null {
 
 //_______PARSE BOOLEAN VALUES____________
 export function parseBooleanValues(value: string): boolean {
+  if (!value) {
+    return false;
+  }
   const val = value.toLowerCase();
   if (val == "yes") {
     return true;
   }
   return false;
+}
+
+//______PARSE STRING VALUES________
+export function vlidataData(value: string) {
+  if (!value) {
+    return undefined;
+  }
+  return value?.toString().trim();
 }
