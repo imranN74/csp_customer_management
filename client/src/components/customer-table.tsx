@@ -22,6 +22,7 @@ export interface Customer {
   accountNumber: string;
   adhaarNum: string;
   address: string;
+  isOperational: boolean;
 }
 
 export interface CustomerDetail {
@@ -29,6 +30,7 @@ export interface CustomerDetail {
   customer: Customer;
   accountOpenDate: string | null;
   passbookRcvDate: string | null;
+
   pmsby: boolean;
   pmjjby: boolean;
   apy: boolean;
@@ -133,11 +135,11 @@ export function CustomerTable({
   }
 
   return (
-    <div className="overflow-x-auto px-4 md:px-8 mt-2">
+    <div className="overflow-x-auto md:px-5 mt-2">
       <table className="w-full max-w-7xl mx-auto">
         <thead className="text-slate-900 text-left text-sm font-semibold border-b border-slate-300 whitespace-nowrap">
           <tr>
-            <th scope="col" aria-sort="none" className="pl-0 px-3 py-3.5">
+            <th scope="col" aria-sort="none" className="px-4 py-3.5">
               <button
                 type="button"
                 className="flex items-center gap-1 cursor-pointer"
@@ -188,7 +190,10 @@ export function CustomerTable({
             </tr>
           ) : (
             data.data.data.map((user: CustomerDetail) => (
-              <tr key={user.customer._id}>
+              <tr
+                key={user.customer._id}
+                className={`${user.customer.isOperational ? "" : "bg-gray-200"}`}
+              >
                 <td className="pl-0 px-3 py-4 font-medium text-slate-900 whitespace-nowrap">
                   <div className="flex flex-col gap-1 justify-center items-center">
                     <span>{user.customer.name}</span>

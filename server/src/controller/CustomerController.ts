@@ -187,6 +187,7 @@ export async function getCustomerData(req: Request, res: Response) {
           "customer.accountNumber": 1,
           "customer.adhaarNum": 1,
           "customer.address": 1,
+          "customer.isOperational": 1,
         },
       },
     ]);
@@ -245,6 +246,7 @@ export async function updateCustomer(req: Request, res: Response) {
     apy,
     pmjjby,
     remarks,
+    isOperational,
   } = req.body;
 
   const customerId = req.params.id!;
@@ -274,6 +276,7 @@ export async function updateCustomer(req: Request, res: Response) {
         accountNumber: accountNumber,
         adhaarNum: adhaarNum,
         address: address.trim(),
+        isOperational: parseBooleanValues(isOperational),
       },
       { session },
     );

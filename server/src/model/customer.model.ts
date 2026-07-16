@@ -12,6 +12,7 @@ const CustomerSchema = new mongoose.Schema(
     age: Number,
     address: String,
     isActive: { type: Boolean, default: true },
+    isOperational: { type: Boolean, default: true },
     createdBy: { type: mongoose.Types.ObjectId, ref: "User", required: true },
   },
   {

@@ -57,6 +57,7 @@ export function EditDialog({
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
+    console.log(data);
 
     mutate(data);
   }
@@ -185,46 +186,63 @@ export function EditDialog({
                     </div>
                   </div>
 
-                  {/* Schemes */}
-                  <div className="mt-3">
-                    <h3 className="mb-3 border-b pb-2 text-sm font-semibold text-slate-700">
-                      Schemes
-                    </h3>
+                  <div className="flex mt-3 justify-between">
+                    <div className="">
+                      <h3 className="mb-3 border-b pb-2 text-sm font-semibold text-slate-700">
+                        Schemes
+                      </h3>
 
-                    <div className="flex flex-wrap gap-6">
-                      <label className="flex items-center gap-2">
-                        <input
-                          name="pmsby"
-                          type="checkbox"
-                          defaultChecked={customerData?.pmsby}
-                          className="h-4 w-4 accent-violet-600"
-                        />
-                        PMSBY
-                      </label>
+                      <div className="flex flex-wrap gap-3">
+                        <label className="flex items-center gap-2">
+                          <input
+                            name="pmsby"
+                            type="checkbox"
+                            defaultChecked={customerData?.pmsby}
+                            className="h-4 w-4 accent-violet-600"
+                          />
+                          PMSBY
+                        </label>
 
-                      <label className="flex items-center gap-2">
-                        <input
-                          name="pmjjby"
-                          type="checkbox"
-                          defaultChecked={customerData?.pmjjby}
-                          className="h-4 w-4 accent-violet-600"
-                        />
-                        PMJJBY
-                      </label>
+                        <label className="flex items-center gap-2">
+                          <input
+                            name="pmjjby"
+                            type="checkbox"
+                            defaultChecked={customerData?.pmjjby}
+                            className="h-4 w-4 accent-violet-600"
+                          />
+                          PMJJBY
+                        </label>
 
-                      <label className="flex items-center gap-2">
-                        <input
-                          name="apy"
-                          type="checkbox"
-                          defaultChecked={customerData?.apy}
-                          className="h-4 w-4 accent-violet-600"
-                        />
-                        APY
-                      </label>
+                        <label className="flex items-center gap-2">
+                          <input
+                            name="apy"
+                            type="checkbox"
+                            defaultChecked={customerData?.apy}
+                            className="h-4 w-4 accent-violet-600"
+                          />
+                          APY
+                        </label>
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="mb-3 border-b pb-2 text-sm font-semibold text-slate-700">
+                        Operational
+                      </h3>
+                      <div className="w-36">
+                        <select
+                          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-violet-500"
+                          name="isOperational"
+                          defaultValue={
+                            customerData?.customer?.isOperational ? "yes" : "no"
+                          }
+                        >
+                          <option value="yes">Yes</option>
+                          <option value="no">No</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Remarks */}
                   <div className="mt-2">
                     <label className="mb-1 block text-sm font-medium">
                       Remarks
