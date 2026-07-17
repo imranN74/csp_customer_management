@@ -449,3 +449,77 @@ export async function createCustomer(req: Request, res: Response) {
     session.endSession();
   }
 }
+
+//_______DOWNLOAD CUSTOMER EXCEL DATA________________
+
+export async function downloadExcel(req: Request, res: Response) {
+  try {
+    const workbook = XLSX.utils.book_new();
+    const data = await CustomerDetail.aggregate([
+      {
+        $lookup: {
+          from: "customers",
+          localField: "customerId",
+          foreignField: "_id",
+          as: "customer",
+        },
+      },
+      { $unwind: "$customer" },
+      { $match: { isActive: true } },
+      { $sort: { createdAt: -1 } },
+      {
+        $project: {
+          pmsby: 1,
+          apy: 1,
+          pmjjby: 1,
+
+          "customer.name": 1,
+          "customer.phone": 1,
+          "customer.email": 1,
+          "customer.accountNumber": 1,
+          "customer.cifNumber": 1,
+          "customer.adhaarNum": 1,
+          "customer.address": 1,
+          "customer.isOperational": 1,
+        },
+      },
+    ]);
+
+    const customer = data.map((d) => {
+      return {
+        name: d.customer.name,
+        phone: d.customer.phone,
+        email: d.customer.email,
+        accountNo: d.customer.accountNumber,
+        cif: d.customer.cifNumber,
+        adhaarNo: d.customer.adhaarNum,
+        address: d.customer.address,
+        operational: d.customer.isOperational ? "Yes" : "No",
+        pmsby: d.pmsby ? "Yes" : "No",
+        pmjjby: d.pmjjby ? "Yes" : "No",
+        apy: d.apy ? "Yes" : "No",
+      };
+    });
+
+    const customerSheet = XLSX.utils.json_to_sheet(customer);
+    XLSX.utils.book_append_sheet(workbook, customerSheet, "Customers");
+    const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
+
+    res.setHeader(
+      "Content-Disposition",
+      'attchement;filename:"customers.xlsx"',
+    );
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    );
+
+    res.send(buffer);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "something went wrong!" });
+  }
+}

@@ -1,6 +1,8 @@
-import { Download, FunnelX, Search, X } from "lucide-react";
+import { FileSpreadsheet, FunnelX, Search, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { ShieldCheck, HeartHandshake, PiggyBank } from "lucide-react";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 interface Filter {
   onSearch: (value: string) => void;
@@ -10,8 +12,36 @@ interface Filter {
 export function Filter({ onSearch, onScheme }: Filter) {
   const timeoutRef = useRef<number | null>(null);
 
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
   const [, setSearchValue] = useState("");
   const [spin, setSpin] = useState(false);
+
+  //________Download Excel__________
+
+  async function handleDownloadReport() {
+    const toastId = toast.loading("Downloading customer data!");
+    try {
+      const response = await axios.get(`${baseUrl}/customer/download`, {
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(response.data);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "customers.xlsx";
+
+      document.body.appendChild(a);
+      a.click();
+
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success("report downloaded successfully", { id: toastId });
+    } catch (error: any) {
+      toast.error(error.response.data.message, { id: toastId });
+    }
+  }
 
   function handleSearchSet(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;
@@ -68,7 +98,7 @@ export function Filter({ onSearch, onScheme }: Filter) {
           }}
         >
           <ShieldCheck size={20} />
-          PMSBY Only
+          PMSBY
         </button>
         <button
           type="button"
@@ -78,7 +108,7 @@ export function Filter({ onSearch, onScheme }: Filter) {
           }}
         >
           <HeartHandshake size={20} />
-          PMJJBY Only
+          PMJJBY
         </button>
         <button
           type="button"
@@ -88,7 +118,7 @@ export function Filter({ onSearch, onScheme }: Filter) {
           }}
         >
           <PiggyBank size={20} />
-          APY Only
+          APY
         </button>
         <button
           type="button"
@@ -112,15 +142,14 @@ export function Filter({ onSearch, onScheme }: Filter) {
           />
         </button>
         <button
-          title="download csv report"
-          type="button"
-          // onClick={handleDownloadReport}
-          className="group flex cursor-pointer items-center gap-2 rounded-lg border border-emerald-400 px-3 py-2 text-sm font-medium text-emerald-600 shadow-sm transition-all duration-200 hover:bg-emerald-50 hover:shadow-md active:scale-95"
+          onClick={handleDownloadReport}
+          className="group inline-flex items-center gap-1 rounded-sm bg-emerald-600 px-2 text-sm font-medium text-white shadow transition-all hover:bg-emerald-700 hover:shadow-lg active:scale-95 cursor-pointer"
         >
-          <Download
-            size={18}
-            className="group transition-transform duration-300 group-hover:translate-y-0.5 group-hover:scale-110 group-active:translate-y-1"
+          <FileSpreadsheet
+            size={20}
+            className="transition-transform group-hover:scale-110"
           />
+          Export
         </button>
       </div>
     </div>
