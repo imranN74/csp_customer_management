@@ -36,7 +36,7 @@ export function InfoDialog({
             <DialogDescription>View customer information.</DialogDescription>
           </DialogHeader>
 
-          <div className="mt-4 space-y-3 text-sm max-h-[60vh] overflow-y-auto">
+          <div className="mt-4 space-y-2 text-sm max-h-[70vh] overflow-y-auto">
             <DetailItem label="Name" value={data?.customer?.name || "-"} />
             <DetailItem label="Phone" value={data?.customer?.phone || "-"} />
             <DetailItem
