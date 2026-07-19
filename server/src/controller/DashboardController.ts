@@ -8,22 +8,27 @@ export async function dashboardData(req: Request, res: Response) {
     const pastMonthDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     const currentWeekCount = await Customer.countDocuments({
       createdAt: { $gte: pastWeekDate },
+      isActive: true,
     });
 
     const currentMonthCount = await Customer.countDocuments({
       createdAt: { $gte: pastMonthDate },
+      isActive: true,
     });
 
     const pmsbyEnrolledCount = await CustomerDetail.countDocuments({
       pmsby: true,
+      isActive: true,
     });
 
     const pmjjbyEnrolledCount = await CustomerDetail.countDocuments({
       pmjjby: true,
+      isActive: true,
     });
 
     const apyEnrolledCount = await CustomerDetail.countDocuments({
       apy: true,
+      isActive: true,
     });
 
     const totalSchemeCount =
