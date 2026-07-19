@@ -4,6 +4,10 @@ import { CustomerDetail, Customer } from "../model/customer.model.js";
 export async function dashboardData(req: Request, res: Response) {
   try {
     const totalCustomer = await Customer.countDocuments({ isActive: true });
+    const totalOperationalCustomer = await Customer.countDocuments({
+      isActive: true,
+      isOperational: true,
+    });
     const pastWeekDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     const pastMonthDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     const currentWeekCount = await Customer.countDocuments({
@@ -36,6 +40,7 @@ export async function dashboardData(req: Request, res: Response) {
 
     const data = {
       totalCustomer: totalCustomer,
+      totalOperationalCustomer: totalOperationalCustomer,
       currentWeekCount: currentWeekCount,
       currentMonthCount: currentMonthCount,
       pmsbyEnrolledCount: pmsbyEnrolledCount,

@@ -6,6 +6,7 @@ import {
   HeartHandshake,
   PiggyBank,
   Puzzle,
+  BadgeCheck,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -57,6 +58,11 @@ export function Dashboard() {
         icon={<UserCheck />}
         title="New This Month"
         value={data.currentMonthCount}
+      />
+      <Card
+        icon={<BadgeCheck />}
+        title="Active Accounts"
+        value={data.totalOperationalCustomer}
       />
       <Card
         icon={<ShieldCheck />}
