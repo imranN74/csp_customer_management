@@ -47,45 +47,45 @@ export function Dashboard() {
       <Card
         icon={<Users />}
         title="Total Customers"
-        value={data.totalCustomer}
+        value={data.totalCustomer || "-"}
       />
       <Card
         icon={<UserCheck />}
         title="New This Week"
-        value={data.currentWeekCount}
+        value={data.currentWeekCount || "-"}
       />
       <Card
         icon={<UserCheck />}
         title="New This Month"
-        value={data.currentMonthCount}
+        value={data.currentMonthCount || "-"}
       />
       <Card
         icon={<BadgeCheck />}
         title="Active Accounts"
-        value={data.totalOperationalCustomer}
+        value={data.totalOperationalCustomer || "-"}
       />
       <Card
         icon={<ShieldCheck />}
         title="Enrolled in PMSBY"
-        value={data.pmsbyEnrolledCount}
+        value={data.pmsbyEnrolledCount || "-"}
         bgColor="bg-violet-100"
       />
       <Card
         icon={<HeartHandshake />}
         title="Enrolled in PMJJBY"
-        value={data.pmjjbyEnrolledCount}
+        value={data.pmjjbyEnrolledCount || "-"}
         bgColor="bg-green-100"
       />
       <Card
         icon={<PiggyBank />}
         title="Enrolled in APY"
-        value={data.apyEnrolledCount}
+        value={data.apyEnrolledCount || "-"}
         bgColor="bg-cyan-100"
       />
       <Card
         icon={<Puzzle />}
         title="Total Enrolled In Scheme"
-        value={data.totalSchemeCount}
+        value={data.totalSchemeCount || "-"}
       />
     </div>
   );

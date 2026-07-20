@@ -1,8 +1,7 @@
-import { FileSpreadsheet, FunnelX, Search, X } from "lucide-react";
+import { FunnelX, Search, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { ShieldCheck, HeartHandshake, PiggyBank } from "lucide-react";
-import axios from "axios";
-import toast from "react-hot-toast";
+// import { ExportData } from "./export-data";
 
 interface Filter {
   onSearch: (value: string) => void;
@@ -12,36 +11,10 @@ interface Filter {
 export function Filter({ onSearch, onScheme }: Filter) {
   const timeoutRef = useRef<number | null>(null);
 
-  const baseUrl = import.meta.env.VITE_API_BASE_URL;
-
   const [, setSearchValue] = useState("");
   const [spin, setSpin] = useState(false);
 
   //________Download Excel__________
-
-  async function handleDownloadReport() {
-    const toastId = toast.loading("Downloading customer data!");
-    try {
-      const response = await axios.get(`${baseUrl}/customer/download`, {
-        responseType: "blob",
-      });
-
-      const url = window.URL.createObjectURL(response.data);
-
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "customers.xlsx";
-
-      document.body.appendChild(a);
-      a.click();
-
-      a.remove();
-      window.URL.revokeObjectURL(url);
-      toast.success("report downloaded successfully", { id: toastId });
-    } catch (error: any) {
-      toast.error(error.response.data.message, { id: toastId });
-    }
-  }
 
   function handleSearchSet(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;
@@ -141,16 +114,7 @@ export function Filter({ onSearch, onScheme }: Filter) {
             } group-hover:scale-110`}
           />
         </button>
-        <button
-          onClick={handleDownloadReport}
-          className="group inline-flex items-center gap-1 rounded-sm bg-emerald-600 px-2 text-sm font-medium text-white shadow transition-all hover:bg-emerald-700 hover:shadow-lg active:scale-95 cursor-pointer"
-        >
-          <FileSpreadsheet
-            size={20}
-            className="transition-transform group-hover:scale-110"
-          />
-          Export
-        </button>
+        {/* <ExportData /> */}
       </div>
     </div>
   );
