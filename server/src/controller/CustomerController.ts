@@ -186,6 +186,7 @@ export async function getCustomerData(req: Request, res: Response) {
           "customer.phone": 1,
           "customer.accountNumber": 1,
           "customer.adhaarNum": 1,
+          "customer.cifNumber": 1,
           "customer.address": 1,
           "customer.isOperational": 1,
         },
@@ -247,6 +248,7 @@ export async function updateCustomer(req: Request, res: Response) {
     pmjjby,
     remarks,
     isOperational,
+    cifNumber,
   } = req.body;
 
   const customerId = req.params.id!;
@@ -264,6 +266,7 @@ export async function updateCustomer(req: Request, res: Response) {
       ? (accountNumber = undefined)
       : (accountNumber = accountNumber.trim());
     !adhaarNum ? (adhaarNum = undefined) : (adhaarNum = adhaarNum.trim());
+    cifNumber ? (cifNumber = cifNumber.trim()) : (cifNumber = "");
 
     session.startTransaction();
     await Customer.findByIdAndUpdate(
@@ -274,6 +277,7 @@ export async function updateCustomer(req: Request, res: Response) {
         name: name.trim(),
         phone: phone.trim(),
         accountNumber: accountNumber,
+        cifNumber: cifNumber,
         adhaarNum: adhaarNum,
         address: address.trim(),
         isOperational: parseBooleanValues(isOperational),

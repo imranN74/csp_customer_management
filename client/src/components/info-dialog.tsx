@@ -44,6 +44,10 @@ export function InfoDialog({
               value={data?.customer?.accountNumber || "-"}
             />
             <DetailItem
+              label="CIF No."
+              value={data?.customer?.cifNumber || "-"}
+            />
+            <DetailItem
               label="Aadhaar No."
               value={data?.customer?.adhaarNum || "-"}
             />

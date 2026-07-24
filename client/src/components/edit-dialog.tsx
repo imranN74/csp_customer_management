@@ -137,8 +137,19 @@ export function EditDialog({
                       className="w-full rounded-md border border-blue-300 bg-white px-2.5 py-2 text-xs transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                     />
                   </div>
+                  <div className="">
+                    <label className="mb-1.5 block text-xs font-medium text-blue-700">
+                      CIF Number
+                    </label>
+                    <input
+                      name="cifNumber"
+                      type="text"
+                      defaultValue={customerData?.customer.cifNumber}
+                      className="w-full rounded-md border border-blue-300 bg-white px-2.5 py-2 text-xs transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                    />
+                  </div>
 
-                  <div className="col-span-2">
+                  <div className="">
                     <label className="mb-1.5 block text-xs font-medium text-blue-700">
                       Address
                     </label>

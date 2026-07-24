@@ -22,6 +22,7 @@ export interface Customer {
   accountNumber: string;
   adhaarNum: string;
   address: string;
+  cifNumber: string;
   isOperational: boolean;
 }
 
